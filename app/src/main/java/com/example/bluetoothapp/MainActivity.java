@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private int duration_long;
     private CharSequence text;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -43,19 +45,27 @@ public class MainActivity extends AppCompatActivity {
         onnBT    = (Button)findViewById(R.id.On);
         offBT    = (Button)findViewById(R.id.Off);
 
-
         listView = (ListView)findViewById(R.id.listview);
 
-        mBTAdapter = BluetoothAdapter.getDefaultAdapter();
+
 
         context = getApplicationContext();
         duration_short = Toast.LENGTH_SHORT;
         duration_long = Toast.LENGTH_LONG;
 
+        Bluetooth obj = new Bluetooth() {
+            @Override
+            int hello() {
+                return 0;
+            }
+        };
+
 
         onnBT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
 
                 if(!mBTAdapter.isEnabled())
                 {
