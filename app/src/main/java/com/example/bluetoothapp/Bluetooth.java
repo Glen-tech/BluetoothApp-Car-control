@@ -1,17 +1,14 @@
 package com.example.bluetoothapp;
 
-abstract class Bluetooth{
+import android.content.Context;
 
-    public Bluetooth()
-    {
+import androidx.appcompat.app.AppCompatActivity;
 
-    }
+public abstract class Bluetooth extends AppCompatActivity {
 
-    abstract int hello();
-
-    protected void finalize()
-    {
-        System.out.println("garbage collected ");
-    }
+    public abstract void turnOnnBT();
+    public abstract void turnOffBT();
+    public abstract void searchBT();
+    public abstract void connectBT();
 
 }

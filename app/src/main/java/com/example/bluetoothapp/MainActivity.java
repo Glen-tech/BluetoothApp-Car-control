@@ -2,37 +2,22 @@ package com.example.bluetoothapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private Button search;
     private Button connect;
     private Button onnBT;
     private Button offBT;
-
     private ListView listView;
-    private BluetoothAdapter mBTAdapter;
-    private BroadcastReceiver mReceiver;
-    private Context context;
-    private int duration_short;
-    private int duration_long;
-    private CharSequence text;
-
-
+    public static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,62 +30,27 @@ public class MainActivity extends AppCompatActivity {
         onnBT    = (Button)findViewById(R.id.On);
         offBT    = (Button)findViewById(R.id.Off);
 
+
         listView = (ListView)findViewById(R.id.listview);
 
-
-
         context = getApplicationContext();
-        duration_short = Toast.LENGTH_SHORT;
-        duration_long = Toast.LENGTH_LONG;
-
-        Bluetooth obj = new Bluetooth() {
-            @Override
-            int hello() {
-                return 0;
-            }
-        };
-
 
         onnBT.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-
-
-
-                if(!mBTAdapter.isEnabled())
-                {
-                    Intent enable = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivity(enable);
-                }
-                    else
-                    {
-                        text = "Bluetooth is already on";
-                        Toast toast = Toast.makeText(context,text,duration_short);
-                        toast.show();
-
-                    }
-
+            public void onClick(View v)
+            {
+                BluetoothFunctions enableBT = new BluetoothFunctions(context);
+                enableBT.turnOnnBT();
             }
         });
 
 
         offBT.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if(mBTAdapter.isEnabled())
-                {
-                    text = "Turning off BlueTooth";
-                    Toast toast = Toast.makeText(context,text,duration_short);
-                    toast.show();
-                    mBTAdapter.disable();
-                }
-                else
-                {
-                    text = "Bluetooth is already off";
-                    Toast toast = Toast.makeText(context,text,duration_short);
-                    toast.show();
-                }
-
+            public void onClick(View v)
+            {
+                BluetoothFunctions  disableBT = new BluetoothFunctions(context);
+                disableBT.turnOffBT();
             }
         });
 
@@ -109,17 +59,19 @@ public class MainActivity extends AppCompatActivity {
         search.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View view) {
-                // Code here executes on main thread after user presses button
-                System.out.println("Search is clicked");
+
+                BluetoothFunctions searchDevices = new BluetoothFunctions(context);
+                searchDevices.searchBT();
 
             }
         });
 
 
         connect.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                // Code here executes on main thread after user presses button
-                System.out.println("Connected is clicked");
+            public void onClick(View view)
+            {
+                BluetoothFunctions obj = new BluetoothFunctions(context);
+                obj.connectBT();
             }
         });
 
