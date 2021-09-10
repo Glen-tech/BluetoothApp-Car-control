@@ -3,9 +3,8 @@
     package="com.example.bluetoothapp">
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <!-- If your app targets Android 9 or lower, you can declare
-     ACCESS_COARSE_LOCATION instead.
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>`
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
 
     <application
@@ -20,10 +19,17 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.TIME_SET" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+
+        <receiver android:name=".BluetoothFunctions">
+
+        </receiver>>
+
+
 
 
 

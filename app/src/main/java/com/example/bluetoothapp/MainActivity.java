@@ -1,14 +1,19 @@
 package com.example.bluetoothapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -17,7 +22,12 @@ public class MainActivity extends AppCompatActivity{
     private Button onnBT;
     private Button offBT;
     private ListView listView;
+
     public static Context context;
+    public static Intent intent;
+    public static IntentFilter filter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,12 +44,19 @@ public class MainActivity extends AppCompatActivity{
         listView = (ListView)findViewById(R.id.listview);
 
         context = getApplicationContext();
+        intent = getIntent();
+
+        filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+
+        registerReceiver(BluetoothFunctions.mReceiver,filter);
 
         onnBT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
             {
-                BluetoothFunctions enableBT = new BluetoothFunctions(context);
+                BluetoothFunctions enableBT = new BluetoothFunctions(context,intent, filter);
                 enableBT.turnOnnBT();
             }
         });
@@ -49,7 +66,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v)
             {
-                BluetoothFunctions  disableBT = new BluetoothFunctions(context);
+                BluetoothFunctions  disableBT = new BluetoothFunctions(context,intent,filter);
                 disableBT.turnOffBT();
             }
         });
@@ -60,7 +77,7 @@ public class MainActivity extends AppCompatActivity{
 
             public void onClick(View view) {
 
-                BluetoothFunctions searchDevices = new BluetoothFunctions(context);
+                BluetoothFunctions searchDevices = new BluetoothFunctions(context,intent,filter);
                 searchDevices.searchBT();
 
             }
@@ -70,11 +87,21 @@ public class MainActivity extends AppCompatActivity{
         connect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view)
             {
-                BluetoothFunctions obj = new BluetoothFunctions(context);
+                BluetoothFunctions obj = new BluetoothFunctions(context,intent,filter);
                 obj.connectBT();
             }
         });
 
+    }
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Don't forget to unregister the ACTION_FOUND receiver.
+        unregisterReceiver(BluetoothFunctions.mReceiver);
     }
 
 }
