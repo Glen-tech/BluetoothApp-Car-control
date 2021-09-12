@@ -6,12 +6,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Set;
 
-public class BluetoothFunctions extends Bluetooth
+public class BluetoothBasicFunctions extends Bluetooth
 {
     private BluetoothAdapter mBTAdapter;
 
@@ -26,7 +28,7 @@ public class BluetoothFunctions extends Bluetooth
     private Intent i;
     private IntentFilter f;
 
-    public BluetoothFunctions(Context context , Intent intent , IntentFilter filter )
+    public BluetoothBasicFunctions(Context context , Intent intent , IntentFilter filter )
     {
         duration_short = Toast.LENGTH_SHORT;
         duration_long = Toast.LENGTH_LONG;
@@ -81,7 +83,10 @@ public class BluetoothFunctions extends Bluetooth
     @Override
     public void searchBT()
     {
-        mBTAdapter.startDiscovery(); // calls the reciever for scanning the bluetooth devices
+
+        mBTAdapter.startDiscovery(); // calls the  public static final BroadcastReceiver mReceiver  for scanning the bluetooth devices
+
+        //first the paired , then the discovered
         ArrayList<String> arrayList = new ArrayList<>();
 
         Set<BluetoothDevice> pairedDevices = mBTAdapter.getBondedDevices();
@@ -101,11 +106,51 @@ public class BluetoothFunctions extends Bluetooth
                 System.out.println("No paired devices");
             }
 
-
-
         System.out.println("Search is clicked");
 
     }
+
+    // Create a BroadcastReceiver for ACTION_FOUND.
+    public static final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                //discovery starts, we can show progress dialog or perform other tasks
+                System.out.println("Started");
+
+            }
+
+                else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
+                {
+                    System.out.println("Finished");
+                    //discovery finishes, dismis progress dialog
+                }
+
+                else if (BluetoothDevice.ACTION_FOUND.equals(action)) // works when location is enabled from the app on the cellphone
+                {
+                    foundDevices(intent);
+                }
+
+                    else
+                    {
+                        System.out.println("Something went wrong");
+                    }
+        }
+    };
+
+    public static void foundDevices(Intent foundDevices)
+    {
+        BluetoothDevice device  = foundDevices.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+        String deviceName = device.getName();
+        String print = (deviceName == null) ? "No name" : deviceName ;
+        System.out.println(print);
+        String deviceHardwareAddress = device.getAddress(); // MAC address
+        System.out.println(deviceHardwareAddress);
+
+    }
+
 
 
     @Override
@@ -115,35 +160,5 @@ public class BluetoothFunctions extends Bluetooth
         System.out.println("Connected is clicked");
     }
 
-    // Create a BroadcastReceiver for ACTION_FOUND.
-    public static final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            System.out.println("action is = " + action);
-
-
-                if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                    //discovery starts, we can show progress dialog or perform other tasks
-                    System.out.println("Started");
-
-                }
-
-                if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                    System.out.println("Finished");
-                    //discovery finishes, dismis progress dialog
-                }
-
-                if (BluetoothDevice.ACTION_FOUND.equals(action)) // works when location is enabled from the app on the cellphone
-                {
-                    BluetoothDevice device  = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    String deviceName = device.getName();
-                    String deviceHardwareAddress = device.getAddress(); // MAC address
-                    System.out.println(deviceName);
-                    System.out.println(deviceHardwareAddress);
-
-                }
-
-        }
-    };
 
 }

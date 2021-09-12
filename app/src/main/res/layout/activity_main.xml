@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
         android:layout_toStartOf="@+id/connect"
-        android:text="Search"
+        android:text="@string/searched_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,7 +27,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="4dp"
         android:insetRight="0dp"
-        android:text="Connect"
+        android:text="@string/connected_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.111"
@@ -35,32 +35,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.04" />
 
-    <ListView
-        android:id="@+id/listview"
-        android:layout_width="230dp"
-        android:layout_height="54dp"
-        android:layout_below="@+id/connect"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="93dp"
-        android:layout_marginBottom="619dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.088"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.188" />
-
     <Button
         android:id="@+id/Off"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
         android:layout_toStartOf="@+id/search"
-        android:text="Off BT" />
+        android:text="@string/of_button" />
 
     <Button
         android:id="@+id/On"
@@ -69,7 +50,53 @@
         android:layout_marginEnd="3dp"
         android:layout_toStartOf="@+id/Off"
         android:insetLeft="4dp"
-        android:text="On BT" />
+        android:text="@string/on_button" />
+
+    <TextView
+        android:id="@+id/PairedTextView"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/On"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="65dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/textview_paired"
+        android:textColor="@android:color/black" />
+
+
+    <TextView
+        android:id="@+id/FoundTextView"
+        android:layout_width="48dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/connect"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="286dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/textview_found"
+        android:textColor="@android:color/black" />
+
+    <ListView
+        android:id="@+id/FoundListView"
+        android:layout_width="110dp"
+        android:layout_height="54dp"
+        android:layout_below="@+id/FoundTextView"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="14dp"
+
+        />
+
+    <ListView
+        android:id="@+id/PairedListView"
+        android:layout_width="110dp"
+        android:layout_height="54dp"
+        android:layout_below="@+id/PairedTextView"
+        android:layout_marginStart="264dp"
+        android:layout_marginTop="14dp"
+
+        />
 
 
 </RelativeLayout>
+
