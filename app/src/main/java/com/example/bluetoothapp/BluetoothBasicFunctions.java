@@ -7,37 +7,50 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class BluetoothBasicFunctions extends Bluetooth
 {
+    public String[] pairedDevicesBT;
+    public static String[] foundDevicesBT;
+
+   /* public String[] countryList;
+    public String[] Animalist; */ // Teststrings
+
     private BluetoothAdapter mBTAdapter;
 
     private int duration_short;
-    private int duration_long;
     private CharSequence text;
-
-    private String deviceName;
-    private String deviceHardwareAddress;
 
     private Context c;
     private Intent i;
     private IntentFilter f;
 
-    public BluetoothBasicFunctions(Context context , Intent intent , IntentFilter filter )
+    private int countPaired;
+    private static int countFounded;
+
+    public BluetoothBasicFunctions(Context context , Intent intent , IntentFilter filter)
     {
         duration_short = Toast.LENGTH_SHORT;
-        duration_long = Toast.LENGTH_LONG;
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
 
         c = context;
         i = intent;
         f = filter;
+
+
+        pairedDevicesBT = new String[8];
+        foundDevicesBT = new String[8];
+
+        /*countryList = new String[]{"Belgium", "Spain", "Malta", "German", "France", "Madagascar"};
+        Animalist = new String[]{"Cat", "Dog", "Hamster", "Elephant", "Tiger", "Lion"};*/
     }
+
 
 
 
@@ -81,34 +94,49 @@ public class BluetoothBasicFunctions extends Bluetooth
     }
 
     @Override
-    public void searchBT()
-    {
+    public void searchBT() {
 
         mBTAdapter.startDiscovery(); // calls the  public static final BroadcastReceiver mReceiver  for scanning the bluetooth devices
 
         //first the paired , then the discovered
-        ArrayList<String> arrayList = new ArrayList<>();
 
         Set<BluetoothDevice> pairedDevices = mBTAdapter.getBondedDevices();
+
 
         if (pairedDevices.size() > 0)
         {
             // There are paired devices. Get the name and address of each paired device.
-            for (BluetoothDevice device : pairedDevices) {
-                deviceName = device.getName();
-                deviceHardwareAddress = device.getAddress(); // MAC address
-                System.out.println(deviceName);
-                System.out.println(deviceHardwareAddress);
+            for (BluetoothDevice device : pairedDevices)
+            {
+
+                if(countPaired < 8)
+                {
+                    String deviceNamePaired = device.getName();
+                    String printNamePaired = (deviceNamePaired == null) ? "No name" : deviceNamePaired;
+                    pairedDevicesBT[countPaired] = printNamePaired;
+                    countPaired++;
+
+                    String deviceHardwareAddressPaired = device.getAddress(); // MAC address
+                    String printAdressPaired = (deviceHardwareAddressPaired == null) ? "No adress" : deviceHardwareAddressPaired;
+                    pairedDevicesBT[countPaired] = printAdressPaired; // MAC address
+                    countPaired++;
+                }
             }
         }
-            else
-            {
-                System.out.println("No paired devices");
-            }
+        else
+        {
+            System.out.println("No paired devices");
+        }
+
+        countPaired = 0;
+
+
 
         System.out.println("Search is clicked");
 
+
     }
+
 
     // Create a BroadcastReceiver for ACTION_FOUND.
     public static final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -124,14 +152,30 @@ public class BluetoothBasicFunctions extends Bluetooth
 
                 else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
                 {
+                    countFounded = 0;
                     System.out.println("Finished");
                     //discovery finishes, dismis progress dialog
                 }
 
-                else if (BluetoothDevice.ACTION_FOUND.equals(action)) // works when location is enabled from the app on the cellphone
+
+                 else if (BluetoothDevice.ACTION_FOUND.equals(action)) // works when location is enabled from the app on the cellphone
                 {
-                    foundDevices(intent);
+                    BluetoothDevice device  = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+                    if(countFounded < 8)
+                    {
+                        String deviceNameFound = device.getName();
+                        String printNameFound = (deviceNameFound == null) ? "No name" : deviceNameFound;
+                        foundDevicesBT[countFounded] = printNameFound;
+                        countFounded++;
+
+                        String deviceHardwareAddressFound = device.getAddress(); // MAC address
+                        String printAdressFound = (deviceHardwareAddressFound == null) ? "No adress" : deviceHardwareAddressFound;
+                        foundDevicesBT[countFounded] = printAdressFound;
+                        countFounded++;
+                    }
                 }
+
 
                     else
                     {
@@ -140,23 +184,41 @@ public class BluetoothBasicFunctions extends Bluetooth
         }
     };
 
-    public static void foundDevices(Intent foundDevices)
-    {
-        BluetoothDevice device  = foundDevices.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-        String deviceName = device.getName();
-        String print = (deviceName == null) ? "No name" : deviceName ;
-        System.out.println(print);
-        String deviceHardwareAddress = device.getAddress(); // MAC address
-        System.out.println(deviceHardwareAddress);
 
+    // working with List<String> can be used in future work
+    @Override
+    public String[] returnPairedBT() // returns paired devices
+    {
+        int i = 0;
+        for(i  = 0; i < 8 ; i++)
+        {
+            if (pairedDevicesBT[i] == null) {
+                pairedDevicesBT[i] = "empty";
+            }
+        }
+        return pairedDevicesBT;
     }
 
+    @Override
+    public String[] returnFoundedBT() //returns found devices
+    {
+        int i = 0;
+        for(i  = 0; i < 8 ; i++)
+        {
+            if (foundDevicesBT[i] == null) {
+                foundDevicesBT[i] = "empty";
+            }
+        }
+        return foundDevicesBT;
+    }
 
 
     @Override
     public void connectBT()
     {
         // Code here executes on main thread after user presses button
+
+
         System.out.println("Connected is clicked");
     }
 

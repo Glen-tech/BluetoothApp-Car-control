@@ -5,8 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
+    android:layout_centerHorizontal="true"
+    tools:context=".MainActivity"
+    >
 
     <Button
         android:id="@+id/search"
@@ -41,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
         android:layout_toStartOf="@+id/search"
-        android:text="@string/of_button" />
+        android:text="@string/off_button" />
 
     <Button
         android:id="@+id/On"
@@ -78,22 +79,26 @@
         android:textColor="@android:color/black" />
 
     <ListView
-        android:id="@+id/FoundListView"
+        android:id="@+id/PairedListView"
         android:layout_width="110dp"
         android:layout_height="54dp"
         android:layout_below="@+id/FoundTextView"
         android:layout_marginStart="6dp"
         android:layout_marginTop="14dp"
+        android:gravity="center"
+
 
         />
 
     <ListView
-        android:id="@+id/PairedListView"
+        android:id="@+id/FoundListView"
         android:layout_width="110dp"
         android:layout_height="54dp"
         android:layout_below="@+id/PairedTextView"
         android:layout_marginStart="264dp"
         android:layout_marginTop="14dp"
+        android:gravity="center"
+
 
         />
 

@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">Car control App Bluetooth</string>
+    <string name="app_name"> Car control App Bluetooth</string>
 
     <string name="on_button">On BT</string>
-    <string name="of_button">Of BT</string>
+    <string name="off_button">Off BT</string>
     <string name="searched_button">Search</string>
     <string name="connected_button">Connect</string>
 

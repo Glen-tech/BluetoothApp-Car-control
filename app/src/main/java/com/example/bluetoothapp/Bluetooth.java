@@ -1,15 +1,15 @@
 package com.example.bluetoothapp;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public abstract class Bluetooth extends AppCompatActivity {
 
     public abstract void turnOnnBT();
     public abstract void turnOffBT();
+
     public abstract void searchBT();
+    public abstract String[] returnPairedBT();
+    public abstract String[] returnFoundedBT();
     public abstract void connectBT();
 
 }

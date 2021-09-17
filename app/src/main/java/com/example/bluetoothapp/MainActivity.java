@@ -14,22 +14,22 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity{
 
     private Button search;
     private Button connect;
     private Button onnBT;
     private Button offBT;
-    private ListView listView;
-
-    private TextView PairedText;
-    private TextView FoundText;
 
     public static Context context;
     public static Intent intent;
     public static IntentFilter filter;
 
-
+    public String[] ReturnPaired;
+    public String[] ReturnFounded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -49,20 +49,11 @@ public class MainActivity extends AppCompatActivity{
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
-        ListView simpleList;
-        ListView simpleList2;
+        ReturnPaired = new String[10];
+        ReturnFounded = new String[10];
 
 
-        /*String countryList[] = {"India", "China", "australia", "Portugle", "America", "NewZealand"};
-
-        simpleList = (ListView)findViewById(R.id.PairedListView);
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.listview_layout, R.id.textView, countryList);
-        simpleList.setAdapter(arrayAdapter);
-
-        simpleList2 = (ListView)findViewById(R.id.FoundListView);
-        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(this, R.layout.listview_layout, R.id.textView, countryList);
-        simpleList.setAdapter(arrayAdapter);*/
-
+        BluetoothBasicFunctions FindList = new BluetoothBasicFunctions(context,intent,filter);
 
         registerReceiver(BluetoothBasicFunctions.mReceiver,filter); // First reciever for search is added
 
@@ -91,10 +82,24 @@ public class MainActivity extends AppCompatActivity{
 
             public void onClick(View view) {
 
-                BluetoothBasicFunctions searchDevices = new BluetoothBasicFunctions(context,intent,filter); // making new object for search BT devices
+                BluetoothBasicFunctions searchDevices = new BluetoothBasicFunctions(context, intent, filter); // making new object for search BT devices
                 searchDevices.searchBT();
+                ReturnPaired = searchDevices.returnPairedBT();
+                ReturnFounded = searchDevices.returnFoundedBT();
+
+                // ArrayAdpter can be customised (future work)
+
+                ArrayAdapter<String> PairedView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ReturnPaired);
+                ListView listViewPaired = (ListView) findViewById(R.id.PairedListView);
+                listViewPaired.setAdapter(PairedView);
+
+                ArrayAdapter<String>  FoundView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ReturnFounded);
+                ListView listViewFound = (ListView) findViewById(R.id.FoundListView);
+                listViewFound.setAdapter(FoundView);
 
             }
+
+
         });
 
 
@@ -113,9 +118,9 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         // Don't forget to unregister the ACTION_FOUND receiver.
         unregisterReceiver(BluetoothBasicFunctions.mReceiver);
     }
+
 
 }
