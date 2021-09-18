@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,8 +29,14 @@ public class MainActivity extends AppCompatActivity{
     public static Intent intent;
     public static IntentFilter filter;
 
-    public String[] ReturnPaired;
-    public String[] ReturnFounded;
+    public List<String> ReturnPaired;
+    public List<String> ReturnFounded;
+
+    public static ArrayAdapter<String> PairedView;
+    public static ArrayAdapter<String> FoundView;
+
+    private  ListView listViewPaired;
+    private  ListView listViewFound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -49,13 +56,8 @@ public class MainActivity extends AppCompatActivity{
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
-        ReturnPaired = new String[10];
-        ReturnFounded = new String[10];
-
-
-        BluetoothBasicFunctions FindList = new BluetoothBasicFunctions(context,intent,filter);
-
-        registerReceiver(BluetoothBasicFunctions.mReceiver,filter); // First reciever for search is added
+        ReturnPaired = new ArrayList<String>();
+        ReturnFounded = new ArrayList<String>();
 
         onnBT.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,20 +84,25 @@ public class MainActivity extends AppCompatActivity{
 
             public void onClick(View view) {
 
+                PairedView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ReturnPaired);
+                FoundView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ReturnFounded);
+
                 BluetoothBasicFunctions searchDevices = new BluetoothBasicFunctions(context, intent, filter); // making new object for search BT devices
+                registerReceiver(BluetoothBasicFunctions.mReceiver,filter); // First reciever for search is added
                 searchDevices.searchBT();
+
                 ReturnPaired = searchDevices.returnPairedBT();
                 ReturnFounded = searchDevices.returnFoundedBT();
 
-                // ArrayAdpter can be customised (future work)
+                System.out.println(ReturnPaired);
+                System.out.println(ReturnFounded);
 
-                ArrayAdapter<String> PairedView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ReturnPaired);
-                ListView listViewPaired = (ListView) findViewById(R.id.PairedListView);
+                listViewPaired = (ListView) findViewById(R.id.PairedListView);
+                listViewFound = (ListView) findViewById(R.id.FoundListView);
+
                 listViewPaired.setAdapter(PairedView);
-
-                ArrayAdapter<String>  FoundView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ReturnFounded);
-                ListView listViewFound = (ListView) findViewById(R.id.FoundListView);
                 listViewFound.setAdapter(FoundView);
+
 
             }
 

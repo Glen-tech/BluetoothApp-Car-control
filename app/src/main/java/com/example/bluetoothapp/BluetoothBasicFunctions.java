@@ -11,13 +11,15 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 public class BluetoothBasicFunctions extends Bluetooth
 {
-    public String[] pairedDevicesBT;
-    public static String[] foundDevicesBT;
+    public List<String> pairedDevicesBT;
+    public static List<String> foundDevicesBT;
 
    /* public String[] countryList;
     public String[] Animalist; */ // Teststrings
@@ -32,7 +34,6 @@ public class BluetoothBasicFunctions extends Bluetooth
     private IntentFilter f;
 
     private int countPaired;
-    private static int countFounded;
 
     public BluetoothBasicFunctions(Context context , Intent intent , IntentFilter filter)
     {
@@ -44,8 +45,8 @@ public class BluetoothBasicFunctions extends Bluetooth
         f = filter;
 
 
-        pairedDevicesBT = new String[8];
-        foundDevicesBT = new String[8];
+        pairedDevicesBT = new ArrayList<String>();
+        foundDevicesBT = new  ArrayList<String>();
 
         /*countryList = new String[]{"Belgium", "Spain", "Malta", "German", "France", "Madagascar"};
         Animalist = new String[]{"Cat", "Dog", "Hamster", "Elephant", "Tiger", "Lion"};*/
@@ -113,15 +114,15 @@ public class BluetoothBasicFunctions extends Bluetooth
                 {
                     String deviceNamePaired = device.getName();
                     String printNamePaired = (deviceNamePaired == null) ? "No name" : deviceNamePaired;
-                    pairedDevicesBT[countPaired] = printNamePaired;
-                    countPaired++;
+                    pairedDevicesBT.add(printNamePaired);
 
                     String deviceHardwareAddressPaired = device.getAddress(); // MAC address
                     String printAdressPaired = (deviceHardwareAddressPaired == null) ? "No adress" : deviceHardwareAddressPaired;
-                    pairedDevicesBT[countPaired] = printAdressPaired; // MAC address
-                    countPaired++;
+                    pairedDevicesBT.add(printAdressPaired);
                 }
             }
+
+            MainActivity.PairedView.notifyDataSetChanged();
         }
         else
         {
@@ -152,8 +153,8 @@ public class BluetoothBasicFunctions extends Bluetooth
 
                 else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
                 {
-                    countFounded = 0;
                     System.out.println("Finished");
+
                     //discovery finishes, dismis progress dialog
                 }
 
@@ -162,18 +163,19 @@ public class BluetoothBasicFunctions extends Bluetooth
                 {
                     BluetoothDevice device  = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-                    if(countFounded < 8)
-                    {
-                        String deviceNameFound = device.getName();
-                        String printNameFound = (deviceNameFound == null) ? "No name" : deviceNameFound;
-                        foundDevicesBT[countFounded] = printNameFound;
-                        countFounded++;
+                    String deviceNameFound = device.getName();
+                    String printNameFound = (deviceNameFound == null) ? "No name" : deviceNameFound;
 
-                        String deviceHardwareAddressFound = device.getAddress(); // MAC address
-                        String printAdressFound = (deviceHardwareAddressFound == null) ? "No adress" : deviceHardwareAddressFound;
-                        foundDevicesBT[countFounded] = printAdressFound;
-                        countFounded++;
-                    }
+                    String deviceHardwareAddressFound = device.getAddress(); // MAC address
+                    String printAdressFound = (deviceHardwareAddressFound == null) ? "No adress" : deviceHardwareAddressFound;
+
+                    foundDevicesBT.add(printNameFound);
+                    foundDevicesBT.add(printAdressFound);
+
+                    System.out.println(foundDevicesBT);
+
+                    MainActivity.FoundView.notifyDataSetChanged();
+
                 }
 
 
@@ -187,28 +189,24 @@ public class BluetoothBasicFunctions extends Bluetooth
 
     // working with List<String> can be used in future work
     @Override
-    public String[] returnPairedBT() // returns paired devices
+    public List<String>returnPairedBT() // returns paired devices
     {
-        int i = 0;
-        for(i  = 0; i < 8 ; i++)
+        if(pairedDevicesBT.isEmpty())
         {
-            if (pairedDevicesBT[i] == null) {
-                pairedDevicesBT[i] = "empty";
-            }
+            pairedDevicesBT.add("Nothing paired");
         }
+
         return pairedDevicesBT;
     }
 
     @Override
-    public String[] returnFoundedBT() //returns found devices
+    public List<String> returnFoundedBT() //returns found devices
     {
-        int i = 0;
-        for(i  = 0; i < 8 ; i++)
+        if(foundDevicesBT.isEmpty())
         {
-            if (foundDevicesBT[i] == null) {
-                foundDevicesBT[i] = "empty";
-            }
+            foundDevicesBT.add("Nothing found");
         }
+
         return foundDevicesBT;
     }
 
