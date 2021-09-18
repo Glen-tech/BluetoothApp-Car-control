@@ -103,7 +103,6 @@ public class MainActivity extends AppCompatActivity{
                 listViewPaired.setAdapter(PairedView);
                 listViewFound.setAdapter(FoundView);
 
-
             }
 
 

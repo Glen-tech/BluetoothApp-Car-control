@@ -191,22 +191,12 @@ public class BluetoothBasicFunctions extends Bluetooth
     @Override
     public List<String>returnPairedBT() // returns paired devices
     {
-        if(pairedDevicesBT.isEmpty())
-        {
-            pairedDevicesBT.add("Nothing paired");
-        }
-
         return pairedDevicesBT;
     }
 
     @Override
     public List<String> returnFoundedBT() //returns found devices
     {
-        if(foundDevicesBT.isEmpty())
-        {
-            foundDevicesBT.add("Nothing found");
-        }
-
         return foundDevicesBT;
     }
 
@@ -215,8 +205,6 @@ public class BluetoothBasicFunctions extends Bluetooth
     public void connectBT()
     {
         // Code here executes on main thread after user presses button
-
-
         System.out.println("Connected is clicked");
     }
 
