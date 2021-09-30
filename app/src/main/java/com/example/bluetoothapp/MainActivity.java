@@ -13,12 +13,15 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
+
 
     private Button search;
     private Button connect;
@@ -38,16 +41,16 @@ public class MainActivity extends AppCompatActivity{
     private  ListView listViewPaired;
     private  ListView listViewFound;
 
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        search   = (Button)findViewById(R.id.search); // crearting variables for interaction buttons
-        connect  = (Button)findViewById(R.id.connect);
-        onnBT    = (Button)findViewById(R.id.On);
-        offBT    = (Button)findViewById(R.id.Off);
+        search = (Button) findViewById(R.id.search); // crearting variables for interaction buttons
+        connect = (Button) findViewById(R.id.connect);
+        onnBT = (Button) findViewById(R.id.On);
+        offBT = (Button) findViewById(R.id.Off);
 
         context = getApplicationContext(); // get the main intent
         intent = getIntent();
@@ -61,9 +64,8 @@ public class MainActivity extends AppCompatActivity{
 
         onnBT.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-                BluetoothBasicFunctions enableBT = new BluetoothBasicFunctions(context,intent, filter); // making new object for enable BT
+            public void onClick(View v) {
+                BluetoothBasicFunctions enableBT = new BluetoothBasicFunctions(context, intent, filter); // making new object for enable BT
                 enableBT.turnOnnBT();
             }
         });
@@ -71,28 +73,28 @@ public class MainActivity extends AppCompatActivity{
 
         offBT.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-                BluetoothBasicFunctions disableBT = new BluetoothBasicFunctions(context,intent,filter);// making new object for disable BT
+            public void onClick(View v) {
+                BluetoothBasicFunctions disableBT = new BluetoothBasicFunctions(context, intent, filter);// making new object for disable BT
                 disableBT.turnOffBT();
             }
         });
 
 
-
         search.setOnClickListener(new View.OnClickListener() {
 
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
+                BluetoothBasicFunctions searchDevices = new BluetoothBasicFunctions(context, intent, filter); // making new object for search BT devices
+
+                onStart();
+                searchDevices.searchBT();
+
+                /*ReturnPaired = BluetoothBasicFunctions.pairedBT;
+                ReturnFounded= BluetoothBasicFunctions.foundBT;
 
                 PairedView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ReturnPaired);
                 FoundView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ReturnFounded);
 
-                BluetoothBasicFunctions searchDevices = new BluetoothBasicFunctions(context, intent, filter); // making new object for search BT devices
-                registerReceiver(BluetoothBasicFunctions.mReceiver,filter); // First reciever for search is added
-                searchDevices.searchBT();
-
-                ReturnPaired = searchDevices.returnPairedBT();
-                ReturnFounded = searchDevices.returnFoundedBT();
 
                 System.out.println(ReturnPaired);
                 System.out.println(ReturnFounded);
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity{
                 listViewFound = (ListView) findViewById(R.id.FoundListView);
 
                 listViewPaired.setAdapter(PairedView);
-                listViewFound.setAdapter(FoundView);
+                listViewFound.setAdapter(FoundView);*/
 
             }
 
@@ -110,9 +112,8 @@ public class MainActivity extends AppCompatActivity{
 
 
         connect.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view)
-            {
-                BluetoothBasicFunctions obj = new BluetoothBasicFunctions(context,intent,filter); // making new object for connecting BT device
+            public void onClick(View view) {
+                BluetoothBasicFunctions obj = new BluetoothBasicFunctions(context, intent, filter); // making new object for connecting BT device
                 obj.connectBT();
             }
         });
@@ -120,12 +121,24 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        registerReceiver(BluetoothBasicFunctions.mReceiver,filter); // First reciever for search is added
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        unregisterReceiver(BluetoothBasicFunctions.mReceiver);
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         // Don't forget to unregister the ACTION_FOUND receiver.
-        unregisterReceiver(BluetoothBasicFunctions.mReceiver);
     }
 
 

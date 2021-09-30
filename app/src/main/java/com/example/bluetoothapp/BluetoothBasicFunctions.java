@@ -11,6 +11,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,22 +19,32 @@ import java.util.Set;
 
 public class BluetoothBasicFunctions extends Bluetooth
 {
-    public List<String> pairedDevicesBT;
+    public static List<String> pairedDevicesBT;
     public static List<String> foundDevicesBT;
+    public static List<String> copyDevicesBT;
+    public static List<String> pairedBT;
+    public static List<String> foundBT;
+
+    public static String copyAdress;
 
    /* public String[] countryList;
     public String[] Animalist; */ // Teststrings
 
     private BluetoothAdapter mBTAdapter;
 
-    private int duration_short;
-    private CharSequence text;
+    private static int duration_short;
+    private static CharSequence text;
 
-    private Context c;
+    private static Context c;
     private Intent i;
     private IntentFilter f;
 
+    private static String getFound;
+    private static String getPaired;
+    private static String BTmodule;
+    public  static String BTmoduleAdress;
     private int countPaired;
+
 
     public BluetoothBasicFunctions(Context context , Intent intent , IntentFilter filter)
     {
@@ -47,6 +58,16 @@ public class BluetoothBasicFunctions extends Bluetooth
 
         pairedDevicesBT = new ArrayList<String>();
         foundDevicesBT = new  ArrayList<String>();
+        copyDevicesBT = new ArrayList<String>();
+        pairedBT = new ArrayList<String>();
+        foundBT = new ArrayList<String>();
+
+        getFound = new String("");
+        getPaired = new String("");
+        BTmoduleAdress= new String("");
+        copyAdress = new String("");
+        BTmodule = new String("HC-05");
+
 
         /*countryList = new String[]{"Belgium", "Spain", "Malta", "German", "France", "Madagascar"};
         Animalist = new String[]{"Cat", "Dog", "Hamster", "Elephant", "Tiger", "Lion"};*/
@@ -77,12 +98,11 @@ public class BluetoothBasicFunctions extends Bluetooth
     @Override
     public void turnOffBT()
     {
-       if(mBTAdapter.isEnabled())
+        if(mBTAdapter.isEnabled())
         {
             text = "Turning off BlueTooth";
             Toast toast = Toast.makeText(c,text,duration_short);
             toast.show();
-            mBTAdapter.disable();
         }
 
             else
@@ -96,6 +116,20 @@ public class BluetoothBasicFunctions extends Bluetooth
 
     @Override
     public void searchBT() {
+
+        if(mBTAdapter.isEnabled())
+        {
+            text = "Searching Devices";
+            Toast toast = Toast.makeText(c,text,duration_short);
+            toast.show();
+        }
+
+            else
+            {
+                text = "Search failed, turn on Bluetooth";
+                Toast toast = Toast.makeText(c,text,duration_short);
+                toast.show();
+            }
 
         mBTAdapter.startDiscovery(); // calls the  public static final BroadcastReceiver mReceiver  for scanning the bluetooth devices
 
@@ -122,7 +156,7 @@ public class BluetoothBasicFunctions extends Bluetooth
                 }
             }
 
-            MainActivity.PairedView.notifyDataSetChanged();
+            //MainActivity.PairedView.notifyDataSetChanged();
         }
         else
         {
@@ -153,13 +187,13 @@ public class BluetoothBasicFunctions extends Bluetooth
 
                 else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
                 {
-                    System.out.println("Finished");
-
-                    //discovery finishes, dismis progress dialog
+                    MainActivity obj = new MainActivity();
+                    copyDevicesBT = foundDevicesBT;
+                    printAndSavePaired(pairedDevicesBT);
+                    printAndSaveFound(copyDevicesBT);
                 }
 
-
-                 else if (BluetoothDevice.ACTION_FOUND.equals(action)) // works when location is enabled from the app on the cellphone
+                else if (BluetoothDevice.ACTION_FOUND.equals(action)) // works when location is enabled from the app on the cellphone
                 {
                     BluetoothDevice device  = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
@@ -174,7 +208,7 @@ public class BluetoothBasicFunctions extends Bluetooth
 
                     System.out.println(foundDevicesBT);
 
-                    MainActivity.FoundView.notifyDataSetChanged();
+                  //  MainActivity.FoundView.notifyDataSetChanged();
 
                 }
 
@@ -186,25 +220,84 @@ public class BluetoothBasicFunctions extends Bluetooth
         }
     };
 
-
-    // working with List<String> can be used in future work
-    @Override
-    public List<String>returnPairedBT() // returns paired devices
+    public static void printAndSavePaired( List<String> paired)
     {
-        return pairedDevicesBT;
+        int i = 0;
+        pairedBT = paired;
+        System.out.println("PairedBT" + pairedBT);
+
+            while(i < pairedBT.size())
+            {
+                getPaired = pairedBT.get(i); // save the element of the list in a string
+
+                if (getPaired.equals(BTmodule) == true)
+                {
+                    BTmoduleAdress = pairedBT.get(i+1); // when found , next element is the hardware adress
+                    copyAdress = BTmoduleAdress;
+                    System.out.println("Found bluetooth module :"+ getPaired);
+                    System.out.println("Hardware adress is :"+ BTmoduleAdress);
+
+                    text = "RC car found, connection can be made";
+                    Toast toast = Toast.makeText(c,text,duration_short);
+                    toast.show();
+                }
+                    else
+                    {
+                        System.out.println("Not located please try again");
+                        System.out.println(getPaired);
+                    }
+                i++;
+            }
+
     }
 
-    @Override
-    public List<String> returnFoundedBT() //returns found devices
+    public static void printAndSaveFound(List<String> found)
     {
-        return foundDevicesBT;
+        int i = 0;
+        foundBT = found;
+        System.out.println("FoundBT" + foundBT);
+
+            while(i < foundBT.size())
+            {
+                System.out.println("In printandsave found");
+                getFound = foundBT.get(i);
+
+                if (getFound.equals(BTmodule) == true)
+                {
+                    BTmoduleAdress = foundBT.get(i+1);
+                    copyAdress = BTmoduleAdress;
+                    System.out.println("Found bluetooth module : " + getFound);
+                    System.out.println("Hardware adress is : " + BTmoduleAdress);
+
+                    text = "RC car found, connection can be made";
+                    Toast toast = Toast.makeText(c,text,duration_short);
+                    toast.show();
+
+                }
+                    else
+                    {
+                        System.out.println(getFound);
+                        System.out.println("Not located please try again");
+                    }
+                i++;
+            }
+
+        if(BTmoduleAdress.isEmpty() == true)
+        {
+            text = "Device not found please try again";
+            Toast toast = Toast.makeText(c,text,duration_short);
+            toast.show();
+        }
+
     }
 
 
     @Override
     public void connectBT()
     {
+
         // Code here executes on main thread after user presses button
+        System.out.println("Adress for connection:" + copyAdress);
         System.out.println("Connected is clicked");
     }
 
