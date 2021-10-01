@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.provider.Settings;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -24,8 +25,6 @@ public class BluetoothBasicFunctions extends Bluetooth
     public static List<String> copyDevicesBT;
     public static List<String> pairedBT;
     public static List<String> foundBT;
-
-    public static String copyAdress;
 
    /* public String[] countryList;
     public String[] Animalist; */ // Teststrings
@@ -62,12 +61,10 @@ public class BluetoothBasicFunctions extends Bluetooth
         pairedBT = new ArrayList<String>();
         foundBT = new ArrayList<String>();
 
+        BTmodule = new String("HC-05");
         getFound = new String("");
         getPaired = new String("");
-        BTmoduleAdress= new String("");
-        copyAdress = new String("");
-        BTmodule = new String("HC-05");
-
+        //BTmoduleAdress= new String(""); loss data
 
         /*countryList = new String[]{"Belgium", "Spain", "Malta", "German", "France", "Madagascar"};
         Animalist = new String[]{"Cat", "Dog", "Hamster", "Elephant", "Tiger", "Lion"};*/
@@ -233,7 +230,6 @@ public class BluetoothBasicFunctions extends Bluetooth
                 if (getPaired.equals(BTmodule) == true)
                 {
                     BTmoduleAdress = pairedBT.get(i+1); // when found , next element is the hardware adress
-                    copyAdress = BTmoduleAdress;
                     System.out.println("Found bluetooth module :"+ getPaired);
                     System.out.println("Hardware adress is :"+ BTmoduleAdress);
 
@@ -265,7 +261,6 @@ public class BluetoothBasicFunctions extends Bluetooth
                 if (getFound.equals(BTmodule) == true)
                 {
                     BTmoduleAdress = foundBT.get(i+1);
-                    copyAdress = BTmoduleAdress;
                     System.out.println("Found bluetooth module : " + getFound);
                     System.out.println("Hardware adress is : " + BTmoduleAdress);
 
@@ -288,16 +283,13 @@ public class BluetoothBasicFunctions extends Bluetooth
             Toast toast = Toast.makeText(c,text,duration_short);
             toast.show();
         }
-
     }
-
 
     @Override
     public void connectBT()
     {
-
         // Code here executes on main thread after user presses button
-        System.out.println("Adress for connection:" + copyAdress);
+        System.out.println("Adress is " + BTmoduleAdress);
         System.out.println("Connected is clicked");
     }
 
