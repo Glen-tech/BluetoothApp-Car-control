@@ -2,6 +2,7 @@ package com.example.bluetoothapp;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,24 +13,24 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class BluetoothBasicFunctions extends Bluetooth
 {
     public static List<String> pairedDevicesBT;
     public static List<String> foundDevicesBT;
-    public static List<String> copyDevicesBT;
     public static List<String> pairedBT;
     public static List<String> foundBT;
-
-   /* public String[] countryList;
-    public String[] Animalist; */ // Teststrings
+    private static int searchedClicked;
 
     private BluetoothAdapter mBTAdapter;
+    private BluetoothSocket hc05socket;
 
     private static int duration_short;
     private static CharSequence text;
@@ -45,6 +46,7 @@ public class BluetoothBasicFunctions extends Bluetooth
     private int countPaired;
 
 
+
     public BluetoothBasicFunctions(Context context , Intent intent , IntentFilter filter)
     {
         duration_short = Toast.LENGTH_SHORT;
@@ -54,20 +56,15 @@ public class BluetoothBasicFunctions extends Bluetooth
         i = intent;
         f = filter;
 
-
         pairedDevicesBT = new ArrayList<String>();
         foundDevicesBT = new  ArrayList<String>();
-        copyDevicesBT = new ArrayList<String>();
         pairedBT = new ArrayList<String>();
         foundBT = new ArrayList<String>();
 
         BTmodule = new String("HC-05");
         getFound = new String("");
         getPaired = new String("");
-        //BTmoduleAdress= new String(""); loss data
 
-        /*countryList = new String[]{"Belgium", "Spain", "Malta", "German", "France", "Madagascar"};
-        Animalist = new String[]{"Cat", "Dog", "Hamster", "Elephant", "Tiger", "Lion"};*/
     }
 
 
@@ -97,6 +94,7 @@ public class BluetoothBasicFunctions extends Bluetooth
     {
         if(mBTAdapter.isEnabled())
         {
+            mBTAdapter.disable();
             text = "Turning off BlueTooth";
             Toast toast = Toast.makeText(c,text,duration_short);
             toast.show();
@@ -152,8 +150,6 @@ public class BluetoothBasicFunctions extends Bluetooth
                     pairedDevicesBT.add(printAdressPaired);
                 }
             }
-
-            //MainActivity.PairedView.notifyDataSetChanged();
         }
         else
         {
@@ -184,10 +180,8 @@ public class BluetoothBasicFunctions extends Bluetooth
 
                 else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
                 {
-                    MainActivity obj = new MainActivity();
-                    copyDevicesBT = foundDevicesBT;
                     printAndSavePaired(pairedDevicesBT);
-                    printAndSaveFound(copyDevicesBT);
+                    printAndSaveFound(foundDevicesBT);
                 }
 
                 else if (BluetoothDevice.ACTION_FOUND.equals(action)) // works when location is enabled from the app on the cellphone
@@ -205,8 +199,6 @@ public class BluetoothBasicFunctions extends Bluetooth
 
                     System.out.println(foundDevicesBT);
 
-                  //  MainActivity.FoundView.notifyDataSetChanged();
-
                 }
 
 
@@ -219,6 +211,7 @@ public class BluetoothBasicFunctions extends Bluetooth
 
     public static void printAndSavePaired( List<String> paired)
     {
+        BTmoduleAdress = "";
         int i = 0;
         pairedBT = paired;
         System.out.println("PairedBT" + pairedBT);
@@ -250,6 +243,7 @@ public class BluetoothBasicFunctions extends Bluetooth
     public static void printAndSaveFound(List<String> found)
     {
         int i = 0;
+        searchedClicked = 0;
         foundBT = found;
         System.out.println("FoundBT" + foundBT);
 
@@ -267,31 +261,54 @@ public class BluetoothBasicFunctions extends Bluetooth
                     text = "RC car found, connection can be made";
                     Toast toast = Toast.makeText(c,text,duration_short);
                     toast.show();
-
+                    searchedClicked = 1;
                 }
                     else
                     {
                         System.out.println(getFound);
-                        System.out.println("Not located please try again");
                     }
                 i++;
             }
 
-        if(BTmoduleAdress.isEmpty() == true)
-        {
-            text = "Device not found please try again";
-            Toast toast = Toast.makeText(c,text,duration_short);
-            toast.show();
-        }
     }
 
     @Override
     public void connectBT()
     {
-        // Code here executes on main thread after user presses button
+        final UUID nUUID = UUID.fromString("00000000-0000-1000-8000-00805F9B34FB");
         System.out.println("Adress is " + BTmoduleAdress);
         System.out.println("Connected is clicked");
+
+        if((mBTAdapter.isEnabled()) && (searchedClicked == 1))
+        {
+            BluetoothDevice hc05 = mBTAdapter.getRemoteDevice(BTmoduleAdress);
+            try {
+                hc05socket = hc05.createRfcommSocketToServiceRecord(nUUID);
+                hc05socket.connect();
+                System.out.println(hc05socket.isConnected());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // Code here executes on main thread after user presses button
+
+            text = "Connecting to RC car";
+            Toast toast = Toast.makeText(c,text,duration_short);
+            toast.show();
+            searchedClicked = 0;
+        }
+                else if ((mBTAdapter.isEnabled()) && (searchedClicked == 0))
+                {
+                    text = "Click first on search";
+                    Toast toast = Toast.makeText(c,text,duration_short);
+                    toast.show();
+                }
+
+                else
+                {
+                    text = "RC car not found";
+                    Toast toast = Toast.makeText(c,text,duration_short);
+                    toast.show();
+                }
     }
-
-
 }
