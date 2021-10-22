@@ -28,12 +28,17 @@ public class MainActivity extends AppCompatActivity{
     private Button onnBT;
     private Button offBT;
 
+    private Button sendForward;
+
     public static Context context;
     public static Intent intent;
     public static IntentFilter filter;
 
     public List<String> ReturnPaired;
     public List<String> ReturnFounded;
+
+    public List<String> getPaired;
+    public List<String> getFounded;
 
     public static ArrayAdapter<String> PairedView;
     public static ArrayAdapter<String> FoundView;
@@ -52,15 +57,18 @@ public class MainActivity extends AppCompatActivity{
         onnBT = (Button) findViewById(R.id.On);
         offBT = (Button) findViewById(R.id.Off);
 
+        sendForward = (Button) findViewById(R.id.sendForward);
+
         context = getApplicationContext(); // get the main intent
         intent = getIntent();
 
-        filter = new IntentFilter(BluetoothDevice.ACTION_FOUND); // Adding filter for searching bluetooth divices
+        filter = new IntentFilter(BluetoothDevice.ACTION_FOUND); // Adding filter for searching bluetooth devices
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
         ReturnPaired = new ArrayList<String>();
         ReturnFounded = new ArrayList<String>();
+
 
         onnBT.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,22 +96,24 @@ public class MainActivity extends AppCompatActivity{
 
                 onStart();
                 searchDevices.searchBT();
+                getFounded = searchDevices.returnFoundedBT();
 
-                /*ReturnPaired = BluetoothBasicFunctions.pairedBT;
-                ReturnFounded= BluetoothBasicFunctions.foundBT;
+                if(BluetoothBasicFunctions.finished == 1)
+                {
+                    System.out.println("finished = 1");
 
-                PairedView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ReturnPaired);
-                FoundView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, ReturnFounded);
+                    System.out.println("Return main paired"  + BluetoothBasicFunctions.pairedDevicesBT);
+                    System.out.println("Return main founded" + getFounded);
 
+                    PairedView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, BluetoothBasicFunctions.pairedDevicesBT);
+                    FoundView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, getFounded);
 
-                System.out.println(ReturnPaired);
-                System.out.println(ReturnFounded);
+                    listViewPaired = (ListView) findViewById(R.id.PairedListView);
+                    listViewFound = (ListView) findViewById(R.id.FoundListView);
 
-                listViewPaired = (ListView) findViewById(R.id.PairedListView);
-                listViewFound = (ListView) findViewById(R.id.FoundListView);
-
-                listViewPaired.setAdapter(PairedView);
-                listViewFound.setAdapter(FoundView);*/
+                    listViewPaired.setAdapter(PairedView);
+                    listViewFound.setAdapter(FoundView);
+                }
 
             }
 
@@ -116,6 +126,15 @@ public class MainActivity extends AppCompatActivity{
                 BluetoothBasicFunctions obj = new BluetoothBasicFunctions(context, intent, filter); // making new object for connecting BT device
                 obj.connectBT();
             }
+        });
+
+
+        sendForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DriveCar_Commands drive = new DriveCar_Commands(context, intent, filter);
+                drive.forward();
+                };
         });
 
     }

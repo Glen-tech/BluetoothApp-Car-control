@@ -7,6 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.ParcelUuid;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
@@ -16,8 +18,10 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,12 +29,13 @@ public class BluetoothBasicFunctions extends Bluetooth
 {
     public static List<String> pairedDevicesBT;
     public static List<String> foundDevicesBT;
+    public static List<String> copyFoundBT;
+
     public static List<String> pairedBT;
     public static List<String> foundBT;
-    private static int searchedClicked;
+    public static int finished;
 
-    private BluetoothAdapter mBTAdapter;
-    private BluetoothSocket hc05socket;
+    private static int searchedClicked;
 
     private static int duration_short;
     private static CharSequence text;
@@ -44,6 +49,12 @@ public class BluetoothBasicFunctions extends Bluetooth
     private static String BTmodule;
     public  static String BTmoduleAdress;
     private int countPaired;
+
+    private BluetoothAdapter mBTAdapter;
+    private BluetoothSocket hc05socket;
+    public static boolean result;
+
+
 
 
 
@@ -60,14 +71,15 @@ public class BluetoothBasicFunctions extends Bluetooth
         foundDevicesBT = new  ArrayList<String>();
         pairedBT = new ArrayList<String>();
         foundBT = new ArrayList<String>();
+        copyFoundBT = new ArrayList<String>();
 
         BTmodule = new String("HC-05");
         getFound = new String("");
         getPaired = new String("");
 
+        result = true;
+
     }
-
-
 
 
     @Override
@@ -171,25 +183,33 @@ public class BluetoothBasicFunctions extends Bluetooth
 
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
 
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 //discovery starts, we can show progress dialog or perform other tasks
                 System.out.println("Started");
-
             }
 
                 else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action))
                 {
+                    finished = 1;
+                    copyFoundBT = foundDevicesBT;
+                    System.out.println("finished in On Recieve= 1");
                     printAndSavePaired(pairedDevicesBT);
                     printAndSaveFound(foundDevicesBT);
+                    //result = device.fetchUuidsWithSdp();
                 }
 
-                else if (BluetoothDevice.ACTION_FOUND.equals(action)) // works when location is enabled from the app on the cellphone
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) // works when location is enabled from the app on the cellphone
                 {
-                    BluetoothDevice device  = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    Parcelable[] uuidExtra = intent.getParcelableArrayExtra(BluetoothDevice.EXTRA_UUID);
+
 
                     String deviceNameFound = device.getName();
                     String printNameFound = (deviceNameFound == null) ? "No name" : deviceNameFound;
+
 
                     String deviceHardwareAddressFound = device.getAddress(); // MAC address
                     String printAdressFound = (deviceHardwareAddressFound == null) ? "No adress" : deviceHardwareAddressFound;
@@ -199,7 +219,14 @@ public class BluetoothBasicFunctions extends Bluetooth
 
                     System.out.println(foundDevicesBT);
 
+                    System.out.println("Call before UUID");
                 }
+
+                    else if(BluetoothDevice.ACTION_UUID.equals(action))
+                    {
+                        BluetoothDevice d = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                        Parcelable[] uuidExtra = intent.getParcelableArrayExtra(BluetoothDevice.EXTRA_UUID);
+                    }
 
 
                     else
@@ -272,10 +299,27 @@ public class BluetoothBasicFunctions extends Bluetooth
 
     }
 
+    public List<String> returnFoundedBT() //returns found devices
+    {
+        System.out.println("Function return foundedBT"+copyFoundBT);
+        return copyFoundBT;
+    }
+
     @Override
     public void connectBT()
     {
-        final UUID nUUID = UUID.fromString("00000000-0000-1000-8000-00805F9B34FB");
+
+
+
+       for (BluetoothDevice x : mBTAdapter.getBondedDevices()) {
+             System.out.println("Main Address: " + x.getAddress());
+            for (ParcelUuid uuid : x.getUuids()) {
+                System.out.println("Main parceluuid:" + uuid.toString());
+            }
+        }
+
+
+        final UUID nUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
         System.out.println("Adress is " + BTmoduleAdress);
         System.out.println("Connected is clicked");
 
@@ -295,20 +339,13 @@ public class BluetoothBasicFunctions extends Bluetooth
             text = "Connecting to RC car";
             Toast toast = Toast.makeText(c,text,duration_short);
             toast.show();
-            searchedClicked = 0;
         }
-                else if ((mBTAdapter.isEnabled()) && (searchedClicked == 0))
-                {
-                    text = "Click first on search";
-                    Toast toast = Toast.makeText(c,text,duration_short);
-                    toast.show();
-                }
 
-                else
-                {
-                    text = "RC car not found";
-                    Toast toast = Toast.makeText(c,text,duration_short);
-                    toast.show();
-                }
+        else
+        {
+            text = "RC car not found";
+            Toast toast = Toast.makeText(c,text,duration_short);
+            toast.show();
+        }
     }
 }

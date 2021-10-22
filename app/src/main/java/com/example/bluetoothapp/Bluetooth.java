@@ -10,5 +10,6 @@ public abstract class Bluetooth extends AppCompatActivity {
     public abstract void turnOffBT();
     public abstract void searchBT();
     public abstract void connectBT();
+    public abstract List<String> returnFoundedBT();
 
 }
