@@ -12,12 +12,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
@@ -27,8 +23,8 @@ public class MainActivity extends AppCompatActivity{
     private Button connect;
     private Button onnBT;
     private Button offBT;
-
     private Button sendForward;
+
 
     public static Context context;
     public static Intent intent;
@@ -36,7 +32,6 @@ public class MainActivity extends AppCompatActivity{
 
     public List<String> ReturnPaired;
     public List<String> ReturnFounded;
-
     public List<String> getPaired;
     public List<String> getFounded;
 
@@ -73,7 +68,7 @@ public class MainActivity extends AppCompatActivity{
         onnBT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BluetoothBasicFunctions enableBT = new BluetoothBasicFunctions(context, intent, filter); // making new object for enable BT
+                BluetoothCommands enableBT = new BluetoothCommands(context, intent, filter); // making new object for enable BT
                 enableBT.turnOnnBT();
             }
         });
@@ -82,7 +77,7 @@ public class MainActivity extends AppCompatActivity{
         offBT.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BluetoothBasicFunctions disableBT = new BluetoothBasicFunctions(context, intent, filter);// making new object for disable BT
+                BluetoothCommands disableBT = new BluetoothCommands(context, intent, filter);// making new object for disable BT
                 disableBT.turnOffBT();
             }
         });
@@ -92,20 +87,20 @@ public class MainActivity extends AppCompatActivity{
 
             public void onClick(View view)
             {
-                BluetoothBasicFunctions searchDevices = new BluetoothBasicFunctions(context, intent, filter); // making new object for search BT devices
+                BluetoothCommands searchDevices = new BluetoothCommands(context, intent, filter); // making new object for search BT devices
 
                 onStart();
                 searchDevices.searchBT();
                 getFounded = searchDevices.returnFoundedBT();
 
-                if(BluetoothBasicFunctions.finished == 1)
+                if(BluetoothCommands.finished == 1)
                 {
                     System.out.println("finished = 1");
 
-                    System.out.println("Return main paired"  + BluetoothBasicFunctions.pairedDevicesBT);
+                    System.out.println("Return main paired"  + BluetoothCommands.pairedDevicesBT);
                     System.out.println("Return main founded" + getFounded);
 
-                    PairedView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, BluetoothBasicFunctions.pairedDevicesBT);
+                    PairedView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, BluetoothCommands.pairedDevicesBT);
                     FoundView = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_list_item_1, getFounded);
 
                     listViewPaired = (ListView) findViewById(R.id.PairedListView);
@@ -123,7 +118,7 @@ public class MainActivity extends AppCompatActivity{
 
         connect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                BluetoothBasicFunctions obj = new BluetoothBasicFunctions(context, intent, filter); // making new object for connecting BT device
+                BluetoothCommands obj = new BluetoothCommands(context, intent, filter); // making new object for connecting BT device
                 obj.connectBT();
             }
         });
@@ -132,8 +127,8 @@ public class MainActivity extends AppCompatActivity{
         sendForward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DriveCar_Commands drive = new DriveCar_Commands(context, intent, filter);
-                drive.forward();
+                BluetoothCommands obj = new BluetoothCommands(context, intent, filter); // making new object for connecting BT device
+                obj.forward();
                 };
         });
 
@@ -144,14 +139,14 @@ public class MainActivity extends AppCompatActivity{
     protected void onStart()
     {
         super.onStart();
-        registerReceiver(BluetoothBasicFunctions.mReceiver,filter); // First reciever for search is added
+        registerReceiver(BluetoothCommands.mReceiver,filter); // First reciever for search is added
     }
 
     @Override
     protected void onStop()
     {
         super.onStop();
-        unregisterReceiver(BluetoothBasicFunctions.mReceiver);
+        unregisterReceiver(BluetoothCommands.mReceiver);
     }
 
     @Override

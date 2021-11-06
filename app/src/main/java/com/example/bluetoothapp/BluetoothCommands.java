@@ -25,40 +25,38 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-public class BluetoothBasicFunctions extends Bluetooth
+public class BluetoothCommands extends Bluetooth
 {
     public static List<String> pairedDevicesBT;
     public static List<String> foundDevicesBT;
     public static List<String> copyFoundBT;
-
     public static List<String> pairedBT;
     public static List<String> foundBT;
+
+    private static String getFound;
+    private static String getPaired;
+    private static String BTmodule;
+    public  static String BTmoduleAdress;
+
     public static int finished;
-
     private static int searchedClicked;
-
     private static int duration_short;
+    private int countPaired;
+
     private static CharSequence text;
 
     private static Context c;
     private Intent i;
     private IntentFilter f;
 
-    private static String getFound;
-    private static String getPaired;
-    private static String BTmodule;
-    public  static String BTmoduleAdress;
-    private int countPaired;
-
     private BluetoothAdapter mBTAdapter;
     private BluetoothSocket hc05socket;
+
     public static boolean result;
 
 
 
-
-
-    public BluetoothBasicFunctions(Context context , Intent intent , IntentFilter filter)
+    public BluetoothCommands(Context context , Intent intent , IntentFilter filter)
     {
         duration_short = Toast.LENGTH_SHORT;
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -80,7 +78,6 @@ public class BluetoothBasicFunctions extends Bluetooth
         result = true;
 
     }
-
 
     @Override
     public void turnOnnBT()
@@ -341,11 +338,79 @@ public class BluetoothBasicFunctions extends Bluetooth
             toast.show();
         }
 
-        else
+            else
+            {
+                text = "RC car not found";
+                Toast toast = Toast.makeText(c,text,duration_short);
+                toast.show();
+            }
+    }
+
+
+    @Override
+    public void forward()
+    {
+
+        if(hc05socket != null)
         {
-            text = "RC car not found";
-            Toast toast = Toast.makeText(c,text,duration_short);
-            toast.show();
+            try { // Converting the string to bytes for transferring
+                hc05socket.getOutputStream().write("F".toString().getBytes());
+                text = "Message send";
+                Toast toast = Toast.makeText(c,text,duration_short);
+                toast.show();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
+    }
+
+    @Override
+    public void backward() {
+
+       /* if(hc05socket != null)
+        {
+            try { // Converting the string to bytes for transferring
+                hc05socket.getOutputStream().write("B".toString().getBytes());
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }*/
+    }
+
+    @Override
+    public void left() {
+       /* if(BluetoothBasicFunctions.hc05socket != null)
+        {
+            try { // Converting the string to bytes for transferring
+                BluetoothBasicFunctions.hc05socket.getOutputStream().write("L".toString().getBytes());
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }*/
+    }
+
+    @Override
+    public void right(){
+       /* if(BluetoothBasicFunctions.hc05socket != null)
+        {
+            try { // Converting the string to bytes for transferring
+                BluetoothBasicFunctions.hc05socket.getOutputStream().write("R".toString().getBytes());
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }*/
+    }
+
+    @Override
+    public void DistanceSensor() {
+
     }
 }
